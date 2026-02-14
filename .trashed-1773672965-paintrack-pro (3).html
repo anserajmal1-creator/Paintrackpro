@@ -1,0 +1,1110 @@
+<!--
+================================================================================
+PainTrack Pro - Pain Management Platform
+Copyright © 2026 PainTrack Pro. All Rights Reserved.
+
+PROPRIETARY AND CONFIDENTIAL
+
+This software and associated documentation files (the "Software") contain
+proprietary algorithms, trade secrets, and confidential information.
+
+Unauthorized copying, modification, distribution, or use of this Software,
+via any medium, is strictly prohibited without express written permission.
+
+Patent Pending
+================================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PainTrack Pro - Clinical Pain Management Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .plan-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .upgrade-btn {
+            background: #ffd700;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,215,0,0.4);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f7f7f7;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tab:hover:not(.active):not(.locked) {
+            background: #ececec;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .pain-scale {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .pain-level {
+            flex: 1;
+            min-width: 50px;
+            padding: 15px 5px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .pain-level:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .pain-level.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .pain-level.level-0, .pain-level.level-1, .pain-level.level-2 { background: #d4edda; }
+        .pain-level.level-3, .pain-level.level-4 { background: #fff3cd; }
+        .pain-level.level-5, .pain-level.level-6 { background: #ffe5b4; }
+        .pain-level.level-7, .pain-level.level-8 { background: #f8d7da; }
+        .pain-level.level-9, .pain-level.level-10 { background: #f5c6cb; }
+
+        .pain-level.selected.level-0, .pain-level.selected.level-1, .pain-level.selected.level-2 { background: #28a745; border-color: #28a745; }
+        .pain-level.selected.level-3, .pain-level.selected.level-4 { background: #ffc107; border-color: #ffc107; }
+        .pain-level.selected.level-5, .pain-level.selected.level-6 { background: #fd7e14; border-color: #fd7e14; }
+        .pain-level.selected.level-7, .pain-level.selected.level-8 { background: #dc3545; border-color: #dc3545; }
+        .pain-level.selected.level-9, .pain-level.selected.level-10 { background: #721c24; border-color: #721c24; }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .entry {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .entry-date {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .entry-pain {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .entry-details {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .entry-details strong {
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .pricing-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card.featured {
+            border-color: #667eea;
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: "MOST POPULAR";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .price span {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .feature-list li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .pro-feature {
+            position: relative;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .pro-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .tabs, .btn, .upgrade-btn {
+                display: none;
+            }
+            .tab-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>🩺 PainTrack Pro</h1>
+                <p>Clinical Pain Management Platform</p>
+            </div>
+            <div>
+                <span class="plan-badge" id="currentPlan">FREE PLAN</span>
+                <button class="upgrade-btn" onclick="showPricing()">⭐ Upgrade</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('log')">📝 Log Entry</button>
+            <button class="tab" onclick="switchTab('history')">📊 History</button>
+            <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
+            <button class="tab" onclick="switchTab('report')">📄 Doctor Report</button>
+            <button class="tab" onclick="switchTab('ai')">🤖 AI Insights</button>
+            <button class="tab" onclick="switchTab('pricing')">💳 Pricing</button>
+        </div>
+
+        <div class="content">
+            <!-- Log Entry Tab -->
+            <div id="log" class="tab-content active">
+                <form id="painForm">
+                    <div class="form-group">
+                        <label>Date & Time</label>
+                        <input type="datetime-local" id="datetime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pain Level (0 = No pain, 10 = Worst pain)</label>
+                        <div class="pain-scale" id="painScale"></div>
+                        <input type="hidden" id="painLevel" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location of Pain</label>
+                        <input type="text" id="location" placeholder="e.g., Lower back, Head, Knee" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Symptoms (separate with commas)</label>
+                        <input type="text" id="symptoms" placeholder="e.g., Throbbing, Sharp, Dull ache, Tingling">
+                    </div>
+
+                    <div class="form-group">
+                        <label>What were you doing? (Triggers/Activities)</label>
+                        <textarea id="triggers" placeholder="e.g., Sitting for long periods, After exercise, Woke up with it"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pain Management Tried</label>
+                        <textarea id="management" placeholder="e.g., Ibuprofen 400mg, Ice pack 20 mins, Rest, Heating pad"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Did it help?</label>
+                        <select id="effectiveness">
+                            <option value="">Select...</option>
+                            <option value="Very effective">Very effective</option>
+                            <option value="Somewhat effective">Somewhat effective</option>
+                            <option value="Not effective">Not effective</option>
+                            <option value="Made it worse">Made it worse</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Notes</label>
+                        <textarea id="notes" placeholder="Any other observations or context"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">💾 Save Entry</button>
+                </form>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history" class="tab-content">
+                <div id="entriesList"></div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="pro-feature">
+                    <span class="pro-badge">PRO</span>
+                    <h2 style="margin-bottom: 20px;">Pain Analytics & Trends</h2>
+                    
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Average Pain</div>
+                            <div class="stat-value">6.5/10</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Pain-Free Days</div>
+                            <div class="stat-value">12</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">High Pain Days</div>
+                            <div class="stat-value">8</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Most Effective</div>
+                            <div class="stat-value">Ice Pack</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Pain Trends (Last 30 Days)</h3>
+                        <p style="color: #999; margin-top: 20px; text-align: center;">📊 Interactive charts available in Pro plan</p>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Treatment Effectiveness</h3>
+                        <p style="color: #999; margin-top: 20px; text-align: center;">📊 Treatment success rates available in Pro plan</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="showPricing()" style="margin-top: 20px;">Unlock Analytics - Upgrade to Pro</button>
+            </div>
+
+            <!-- Report Tab -->
+            <div id="report" class="tab-content">
+                <h2 style="margin-bottom: 20px; color: #333;">📄 Medical Summary Report</h2>
+                <div id="reportContent"></div>
+                
+                <div style="margin-top: 20px; padding: 20px; background: #f0f7ff; border-radius: 12px; border: 2px solid #667eea;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📤 Share with Healthcare Provider</h3>
+                    <p style="margin-bottom: 15px; color: #555; font-size: 14px;">Instantly share your report via email, SMS, or secure portal</p>
+                    
+                    <div class="form-group">
+                        <label>Doctor's Email</label>
+                        <input type="email" id="doctorEmail" placeholder="doctor@hospital.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Doctor's Phone (for SMS)</label>
+                        <input type="tel" id="doctorPhone" placeholder="+1234567890">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="shareViaEmail()" style="margin-bottom: 10px;">📧 Email Report</button>
+                    <button class="btn btn-primary" onclick="shareViaSMS()" style="margin-bottom: 10px; background: #28a745;">💬 Text Summary</button>
+                    <button class="btn btn-primary" onclick="shareViaPortal()" style="margin-bottom: 10px; background: #17a2b8;">🔒 Secure Portal (PRO)</button>
+                </div>
+                
+                <button class="btn btn-primary" onclick="window.print()" style="margin-top: 20px;">🖨️ Print/Save as PDF</button>
+                <button class="btn btn-secondary" onclick="copyReport()" style="width: 100%;">📋 Copy to Clipboard</button>
+            </div>
+
+            <!-- AI Insights Tab -->
+            <div id="ai" class="tab-content">
+                <div class="pro-feature">
+                    <span class="pro-badge">PRO</span>
+                    <h2 style="margin-bottom: 20px;">🤖 AI-Powered Insights</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Pattern Recognition</h3>
+                        <p style="color: #555; line-height: 1.6;">Our AI analyzes your pain patterns to identify:</p>
+                        <ul class="feature-list">
+                            <li>Common triggers and their timing</li>
+                            <li>Most effective treatments for you</li>
+                            <li>Correlation with weather, stress, or activities</li>
+                            <li>Early warning signs of flare-ups</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Predictive Analytics</h3>
+                        <p style="color: #555; line-height: 1.6;">Machine learning predicts potential high-pain days based on your history and lifestyle factors.</p>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Personalized Recommendations</h3>
+                        <p style="color: #555; line-height: 1.6;">Get tailored suggestions for pain management strategies that work best for your specific condition.</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="showPricing()" style="margin-top: 20px;">Unlock AI Insights - Upgrade to Pro</button>
+            </div>
+
+            <!-- Pricing Tab -->
+            <div id="pricing" class="tab-content">
+                <h2 style="text-align: center; margin-bottom: 10px;">Choose Your Plan</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">For Patients: Track, analyze, and share your pain journey</p>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>Free</h3>
+                        <div class="price">$0<span>/month</span></div>
+                        <ul class="feature-list">
+                            <li>Up to 10 pain entries</li>
+                            <li>Basic pain logging</li>
+                            <li>Email & SMS sharing</li>
+                            <li>PDF export</li>
+                            <li>Basic reports</li>
+                        </ul>
+                        <button class="btn btn-secondary" style="width: 100%;">Current Plan</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <h3>Pro</h3>
+                        <div class="price">$9.99<span>/month</span></div>
+                        <ul class="feature-list">
+                            <li>Unlimited pain entries</li>
+                            <li>Advanced analytics & charts</li>
+                            <li>AI-powered insights</li>
+                            <li>Trend analysis</li>
+                            <li>Pattern recognition</li>
+                            <li>Secure portal sharing</li>
+                            <li>Photo attachments</li>
+                            <li>Medication tracking</li>
+                            <li>Priority support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="upgradeToPro()">Upgrade to Pro</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3>Family</h3>
+                        <div class="price">$19.99<span>/month</span></div>
+                        <ul class="feature-list">
+                            <li>All Pro features</li>
+                            <li>Up to 5 family members</li>
+                            <li>Shared caregiver access</li>
+                            <li>Multiple provider sharing</li>
+                            <li>Family dashboard</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="upgradeToFamily()">Get Family Plan</button>
+                    </div>
+                </div>
+
+                <hr style="margin: 50px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h2 style="text-align: center; margin-bottom: 10px;">Enterprise Solutions</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">For Healthcare Providers, Clinics & Hospitals</p>
+
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>Clinic</h3>
+                        <div class="price">$299<span>/month</span></div>
+                        <ul class="feature-list">
+                            <li>Up to 100 patients</li>
+                            <li>Provider dashboard</li>
+                            <li>Patient management</li>
+                            <li>Bulk data export</li>
+                            <li>HIPAA compliance</li>
+                            <li>EHR integration (basic)</li>
+                            <li>Custom branding</li>
+                            <li>Analytics reports</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="contactSales('clinic')">Contact Sales</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <h3>Hospital</h3>
+                        <div class="price">$999<span>/month</span></div>
+                        <ul class="feature-list">
+                            <li>Unlimited patients</li>
+                            <li>Multi-department access</li>
+                            <li>Advanced EHR integration</li>
+                            <li>API access</li>
+                            <li>White-label option</li>
+                            <li>Dedicated account manager</li>
+                            <li>Custom workflows</li>
+                            <li>Research data export</li>
+                            <li>SSO integration</li>
+                            <li>24/7 support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="contactSales('hospital')">Contact Sales</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3>Research</h3>
+                        <div class="price">Custom</div>
+                        <ul class="feature-list">
+                            <li>All Hospital features</li>
+                            <li>Clinical trial support</li>
+                            <li>IRB-compliant data</li>
+                            <li>Anonymized datasets</li>
+                            <li>Research analytics</li>
+                            <li>Custom endpoints</li>
+                            <li>Publication support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="contactSales('research')">Contact Sales</button>
+                    </div>
+                </div>
+
+                <div style="background: #f0f7ff; padding: 30px; border-radius: 12px; margin-top: 40px; text-align: center;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">💰 Revenue Opportunities</h3>
+                    <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                        <p style="margin-bottom: 15px; color: #555;"><strong>B2C (Direct to Patient):</strong></p>
+                        <ul class="feature-list">
+                            <li>Monthly recurring revenue from subscriptions</li>
+                            <li>Average $9.99-$19.99 per patient/month</li>
+                            <li>Low churn rate (chronic pain = long-term need)</li>
+                        </ul>
+                        
+                        <p style="margin: 25px 0 15px; color: #555;"><strong>B2B (Healthcare Providers):</strong></p>
+                        <ul class="feature-list">
+                            <li>$299-$999+ per organization per month</li>
+                            <li>Annual contracts with volume discounts</li>
+                            <li>Integration fees: $5,000-$50,000 one-time</li>
+                            <li>White-label licensing: $10,000-$100,000/year</li>
+                        </ul>
+
+                        <p style="margin: 25px 0 15px; color: #555;"><strong>Additional Revenue Streams:</strong></p>
+                        <ul class="feature-list">
+                            <li>API access fees for third-party developers</li>
+                            <li>Anonymous data licensing to researchers</li>
+                            <li>Affiliate commissions from pain management products</li>
+                            <li>Premium features (photo diary, voice notes)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Upgrade to Pro</h2>
+            <p style="margin-bottom: 20px; color: #555;">This is a demo. In production, integrate with:</p>
+            <ul class="feature-list">
+                <li>Stripe for payment processing</li>
+                <li>Auth0 for user authentication</li>
+                <li>AWS/Firebase for secure data storage</li>
+                <li>Twilio for SMS capabilities</li>
+                <li>SendGrid for email automation</li>
+            </ul>
+            <button class="btn btn-primary" style="margin-top: 20px;" onclick="simulateUpgrade()">Simulate Upgrade (Demo)</button>
+        </div>
+    </div>
+
+    <script>
+        let entries = [];
+        let currentPlan = 'free'; // 'free', 'pro', 'family'
+        const FREE_LIMIT = 10;
+
+        document.getElementById('datetime').value = new Date().toISOString().slice(0, 16);
+
+        // Generate pain scale
+        const painScale = document.getElementById('painScale');
+        for (let i = 0; i <= 10; i++) {
+            const div = document.createElement('div');
+            div.className = `pain-level level-${i}`;
+            div.textContent = i;
+            div.onclick = () => selectPainLevel(i);
+            painScale.appendChild(div);
+        }
+
+        function selectPainLevel(level) {
+            document.querySelectorAll('.pain-level').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('painLevel').value = level;
+        }
+
+        document.getElementById('painForm').onsubmit = (e) => {
+            e.preventDefault();
+            
+            if (currentPlan === 'free' && entries.length >= FREE_LIMIT) {
+                alert('Free plan limit reached! Upgrade to Pro for unlimited entries.');
+                showPricing();
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                datetime: document.getElementById('datetime').value,
+                painLevel: document.getElementById('painLevel').value,
+                location: document.getElementById('location').value,
+                symptoms: document.getElementById('symptoms').value,
+                triggers: document.getElementById('triggers').value,
+                management: document.getElementById('management').value,
+                effectiveness: document.getElementById('effectiveness').value,
+                notes: document.getElementById('notes').value
+            };
+
+            entries.unshift(entry);
+            
+            document.getElementById('painForm').reset();
+            document.getElementById('datetime').value = new Date().toISOString().slice(0, 16);
+            document.querySelectorAll('.pain-level').forEach(el => el.classList.remove('selected'));
+            
+            alert('Entry saved successfully! ' + (currentPlan === 'free' ? `(${entries.length}/${FREE_LIMIT} entries used)` : ''));
+            renderHistory();
+            renderReport();
+        };
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'history') renderHistory();
+            if (tabName === 'report') renderReport();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('entriesList');
+            
+            if (entries.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>No entries yet. Start by logging your first pain entry.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = entries.map(entry => {
+                const date = new Date(entry.datetime);
+                const painColor = entry.painLevel <= 2 ? '#28a745' : 
+                                 entry.painLevel <= 4 ? '#ffc107' :
+                                 entry.painLevel <= 6 ? '#fd7e14' :
+                                 entry.painLevel <= 8 ? '#dc3545' : '#721c24';
+                
+                return `
+                    <div class="entry">
+                        <div class="entry-header">
+                            <span class="entry-date">${date.toLocaleString()}</span>
+                            <span class="entry-pain" style="background: ${painColor}; color: white;">
+                                Pain: ${entry.painLevel}/10
+                            </span>
+                        </div>
+                        <div class="entry-details">
+                            <strong>Location:</strong> ${entry.location}<br>
+                            ${entry.symptoms ? `<strong>Symptoms:</strong> ${entry.symptoms}<br>` : ''}
+                            ${entry.triggers ? `<strong>Triggers:</strong> ${entry.triggers}<br>` : ''}
+                            ${entry.management ? `<strong>Management:</strong> ${entry.management}<br>` : ''}
+                            ${entry.effectiveness ? `<strong>Effectiveness:</strong> ${entry.effectiveness}<br>` : ''}
+                            ${entry.notes ? `<strong>Notes:</strong> ${entry.notes}` : ''}
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteEntry(${entry.id})" style="margin-top: 10px;">Delete</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteEntry(id) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                entries = entries.filter(e => e.id !== id);
+                renderHistory();
+                renderReport();
+            }
+        }
+
+        function renderReport() {
+            const report = document.getElementById('reportContent');
+            
+            if (entries.length === 0) {
+                report.innerHTML = '<p style="color: #999;">No data to generate report. Please add some entries first.</p>';
+                return;
+            }
+
+            const avgPain = (entries.reduce((sum, e) => sum + parseInt(e.painLevel), 0) / entries.length).toFixed(1);
+            const maxPain = Math.max(...entries.map(e => parseInt(e.painLevel)));
+            const locations = {};
+            
+            entries.forEach(e => {
+                locations[e.location] = (locations[e.location] || 0) + 1;
+            });
+
+            const mostCommonLocation = Object.keys(locations).sort((a, b) => locations[b] - locations[a])[0];
+
+            report.innerHTML = `
+                <div style="border: 2px solid #667eea; padding: 20px; border-radius: 12px; background: #f8f9ff;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Patient Pain Summary</h3>
+                    <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Report Period:</strong> ${new Date(entries[entries.length - 1].datetime).toLocaleDateString()} to ${new Date(entries[0].datetime).toLocaleDateString()}</p>
+                    <p><strong>Total Entries:</strong> ${entries.length}</p>
+                    <p><strong>Average Pain Level:</strong> ${avgPain}/10</p>
+                    <p><strong>Maximum Pain Level:</strong> ${maxPain}/10</p>
+                    <p><strong>Most Common Location:</strong> ${mostCommonLocation} (${locations[mostCommonLocation]} occurrences)</p>
+                </div>
+
+                <h3 style="margin-top: 30px; color: #333;">Recent Pain Episodes</h3>
+                ${entries.slice(0, 10).map(entry => {
+                    const date = new Date(entry.datetime);
+                    return `
+                        <div style="border-left: 4px solid #667eea; padding: 15px; margin: 15px 0; background: #f8f9fa;">
+                            <p><strong>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</strong></p>
+                            <p>Pain Level: <strong>${entry.painLevel}/10</strong> | Location: <strong>${entry.location}</strong></p>
+                            ${entry.symptoms ? `<p>Symptoms: ${entry.symptoms}</p>` : ''}
+                            ${entry.triggers ? `<p>Potential Triggers: ${entry.triggers}</p>` : ''}
+                            ${entry.management ? `<p>Treatment: ${entry.management} (${entry.effectiveness || 'effectiveness not recorded'})</p>` : ''}
+                            ${entry.notes ? `<p>Notes: ${entry.notes}</p>` : ''}
+                        </div>
+                    `;
+                }).join('')}
+            `;
+        }
+
+        function copyReport() {
+            const reportText = document.getElementById('reportContent').innerText;
+            navigator.clipboard.writeText(reportText).then(() => {
+                alert('Report copied to clipboard!');
+            });
+        }
+
+        function shareViaEmail() {
+            const email = document.getElementById('doctorEmail').value;
+            if (!email) {
+                alert('Please enter your doctor\'s email address');
+                return;
+            }
+
+            const reportText = document.getElementById('reportContent').innerText;
+            const subject = encodeURIComponent('PainTrack Report - ' + new Date().toLocaleDateString());
+            const body = encodeURIComponent('Dear Doctor,\n\nPlease find my pain tracking report below:\n\n' + reportText + '\n\nGenerated by PainTrack Pro\nBest regards');
+            
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        function shareViaSMS() {
+            const phone = document.getElementById('doctorPhone').value;
+            if (!phone) {
+                alert('Please enter your doctor\'s phone number');
+                return;
+            }
+
+            if (entries.length === 0) {
+                alert('No entries to share');
+                return;
+            }
+
+            const latest = entries[0];
+            const avgPain = (entries.reduce((sum, e) => sum + parseInt(e.painLevel), 0) / entries.length).toFixed(1);
+            const date = new Date(latest.datetime);
+            
+            const smsText = encodeURIComponent(
+                `PainTrack Update:\n` +
+                `Latest: ${date.toLocaleDateString()} - Pain ${latest.painLevel}/10\n` +
+                `Location: ${latest.location}\n` +
+                `${latest.symptoms ? 'Symptoms: ' + latest.symptoms + '\n' : ''}` +
+                `Avg pain (${entries.length} entries): ${avgPain}/10\n` +
+                `Full report available via email.`
+            );
+            
+            window.location.href = `sms:${phone}?body=${smsText}`;
+        }
+
+        function shareViaPortal() {
+            if (currentPlan === 'free') {
+                alert('Secure portal sharing is a Pro feature. Please upgrade to access this feature.');
+                showPricing();
+            } else {
+                alert('In production, this would securely upload the report to your healthcare provider\'s portal via HIPAA-compliant API.');
+            }
+        }
+
+        function showPricing() {
+            switchTab('pricing');
+            const pricingTab = Array.from(document.querySelectorAll('.tab')).find(t => t.textContent.includes('Pricing'));
+            if (pricingTab) {
+                pricingTab.classList.add('active');
+                document.getElementById('pricing').classList.add('active');
+            }
+        }
+
+        function upgradeToPro() {
+            document.getElementById('upgradeModal').style.display = 'block';
+        }
+
+        function upgradeToFamily() {
+            document.getElementById('upgradeModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('upgradeModal').style.display = 'none';
+        }
+
+        function simulateUpgrade() {
+            currentPlan = 'pro';
+            document.getElementById('currentPlan').textContent = 'PRO PLAN';
+            document.getElementById('currentPlan').style.background = '#ffd700';
+            document.getElementById('currentPlan').style.color = '#333';
+            closeModal();
+            alert('Successfully upgraded to Pro! You now have unlimited entries and access to all features.');
+        }
+
+        function contactSales(plan) {
+            alert(`Thank you for your interest in PainTrack ${plan.charAt(0).toUpperCase() + plan.slice(1)}!\n\nIn production, this would:\n1. Open a contact form\n2. Send notification to sales team\n3. Schedule a demo call\n4. Provide pricing details\n\nEstimated setup: 2-4 weeks\nCustom integrations available`);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('upgradeModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        renderHistory();
+        renderReport();
+    </script>
+    
+    <!-- Legal Footer -->
+    <footer style="background: #f8f9fa; padding: 30px 20px; text-align: center; border-top: 2px solid #e0e0e0; font-size: 13px; color: #666;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                <strong style="color: #856404;">⚠️ IMPORTANT MEDICAL DISCLAIMER</strong>
+                <p style="margin: 10px 0 0 0; color: #856404; line-height: 1.5;">
+                    PainTrack Pro is a tracking tool, NOT a medical device and does NOT provide medical advice, diagnosis, or treatment. 
+                    Always consult qualified healthcare professionals for medical decisions. If you have a medical emergency, call 999 or visit A&E immediately.
+                </p>
+            </div>
+            
+            <p style="margin: 15px 0; font-weight: 600; color: #333;">© 2026 PainTrack Pro. All Rights Reserved.</p>
+            <p style="margin: 10px 0;">
+                <a href="terms.html" style="color: #667eea; text-decoration: none; margin: 0 10px;">Terms of Service</a> | 
+                <a href="privacy.html" style="color: #667eea; text-decoration: none; margin: 0 10px;">Privacy Policy</a> | 
+                <a href="mailto:support@paintrackpro.co.uk" style="color: #667eea; text-decoration: none; margin: 0 10px;">Contact Support</a>
+            </p>
+            <p style="margin: 15px 0; font-size: 11px; color: #999;">
+                Patent Pending • UK GDPR Compliant • Registered in England and Wales
+            </p>
+            <p style="margin: 10px 0; font-size: 11px; color: #999;">
+                This software contains proprietary algorithms and trade secrets. Unauthorised use is prohibited.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
